@@ -1,0 +1,62 @@
+<h2>YNAB Account Monitor &mdash; <%= Date.today.strftime("%B %d, %Y") %></h2>
+
+<% if @shortfalls.any? %>
+<h3>Credit Card Coverage Issues</h3>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: monospace;">
+  <thead>
+    <tr style="background: #f5f5f5;">
+      <th>Credit Card</th>
+      <th>Payment Needed</th>
+      <th>Payment Available</th>
+      <th>Checking Account</th>
+      <th>Available to Pay</th>
+      <th>Issues</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @shortfalls.each do |s| %>
+    <tr>
+      <td><strong><%= s.cc_name %></strong></td>
+      <td style="text-align: right;"><%= format_milliunits(s.payment_needed) %></td>
+      <td style="text-align: right;"><%= format_milliunits(s.payment_available) %></td>
+      <td><%= s.checking_name %> (<%= format_milliunits(s.checking_balance) %>, min: <%= format_milliunits(s.checking_minimum) %>)</td>
+      <td style="text-align: right;"><%= format_milliunits(s.available_checking) %></td>
+      <td>
+        <% if s.underfunded %>
+          <span style="color: #d32f2f;">Underfunded by <%= format_milliunits(s.payment_needed - s.payment_available) %></span><br>
+        <% end %>
+        <% if s.uncoverable %>
+          <span style="color: #d32f2f;">Checking short by <%= format_milliunits(s.payment_needed - s.available_checking) %></span>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>
+
+<% if @low_balances.any? %>
+<h3>Minimum Balance Alerts</h3>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: monospace;">
+  <thead>
+    <tr style="background: #f5f5f5;">
+      <th>Account</th>
+      <th>Balance</th>
+      <th>Minimum</th>
+      <th>Shortfall</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @low_balances.each do |lb| %>
+    <tr>
+      <td><strong><%= lb.account_name %></strong></td>
+      <td style="text-align: right; color: #d32f2f;"><%= format_milliunits(lb.balance) %></td>
+      <td style="text-align: right;"><%= format_milliunits(lb.minimum) %></td>
+      <td style="text-align: right; color: #d32f2f;"><%= format_milliunits(lb.minimum - lb.balance) %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>

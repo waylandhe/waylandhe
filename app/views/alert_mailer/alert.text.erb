@@ -1,0 +1,32 @@
+YNAB Account Monitor - <%= Date.today.strftime("%B %d, %Y") %>
+<%= "=" * 50 %>
+<% if @shortfalls.any? %>
+
+CREDIT CARD COVERAGE ISSUES
+<%= "-" * 30 %>
+<% @shortfalls.each do |s| %>
+
+<%= s.cc_name %>
+  Payment needed:    <%= format_milliunits(s.payment_needed) %>
+  Payment available: <%= format_milliunits(s.payment_available) %>
+  Checking account:  <%= s.checking_name %> (<%= format_milliunits(s.checking_balance) %>)
+  Minimum reserve:   <%= format_milliunits(s.checking_minimum) %>
+  Available to pay:  <%= format_milliunits(s.available_checking) %>
+<% if s.underfunded %>  ⚠ UNDERFUNDED: Need to budget <%= format_milliunits(s.payment_needed - s.payment_available) %> more
+<% end %>
+<% if s.uncoverable %>  ⚠ UNCOVERABLE: Checking short by <%= format_milliunits(s.payment_needed - s.available_checking) %>
+<% end %>
+<% end %>
+<% end %>
+<% if @low_balances.any? %>
+
+MINIMUM BALANCE ALERTS
+<%= "-" * 30 %>
+<% @low_balances.each do |lb| %>
+
+<%= lb.account_name %>
+  Balance:  <%= format_milliunits(lb.balance) %>
+  Minimum:  <%= format_milliunits(lb.minimum) %>
+  Shortfall: <%= format_milliunits(lb.minimum - lb.balance) %>
+<% end %>
+<% end %>

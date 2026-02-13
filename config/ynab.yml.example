@@ -1,0 +1,12 @@
+budget_id: "last-used"
+
+# Which checking account pays each credit card (CC name -> checking account UUID)
+# Run `rake ynab:list_accounts` to find account UUIDs
+account_mappings:
+  "Chase Sapphire": "checking-account-uuid-here"
+  "Amex Gold": "other-checking-uuid-here"
+
+# Minimum balance alerts (account name -> minimum in dollars)
+minimum_balances:
+  "Primary Checking": 1000
+  "Savings": 5000
